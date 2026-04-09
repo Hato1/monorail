@@ -1,39 +1,27 @@
 """Class representing the player's monorail."""
 
-from enum import Enum
-
 import pygame as pg
 from pygame import Color
 
 from monorail import constants
-from monorail.utils.vector import Vector2
-
-
-class Direction(Enum):
-    """Enum representing the four cardinal directions."""
-
-    STOP = Vector2(0, 0)
-    UP = Vector2(0, -1)
-    DOWN = Vector2(0, 1)
-    LEFT = Vector2(-1, 0)
-    RIGHT = Vector2(1, 0)
-
-    @property
-    def vector(self) -> Vector2:
-        """Return the vector representation of the direction."""
-        return self.value
+from monorail.utils.vector import Direction, Vector2
 
 
 def get_directional_input(keys) -> Direction | None:
     """Get directional input from the keyboard and return it as a Direction."""
-    if keys[pg.K_w] or keys[pg.K_UP]:
-        return Direction.UP
-    if keys[pg.K_s] or keys[pg.K_DOWN]:
-        return Direction.DOWN
-    if keys[pg.K_a] or keys[pg.K_LEFT]:
-        return Direction.LEFT
-    if keys[pg.K_d] or keys[pg.K_RIGHT]:
-        return Direction.RIGHT
+    direction_map = {
+        pg.K_w: Direction.UP,
+        pg.K_s: Direction.DOWN,
+        pg.K_a: Direction.LEFT,
+        pg.K_d: Direction.RIGHT,
+        pg.K_UP: Direction.UP,
+        pg.K_DOWN: Direction.DOWN,
+        pg.K_LEFT: Direction.LEFT,
+        pg.K_RIGHT: Direction.RIGHT,
+    }
+    for key, direction in direction_map.items():
+        if keys[key]:
+            return direction
     return None
 
 

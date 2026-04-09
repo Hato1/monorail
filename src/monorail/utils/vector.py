@@ -1,4 +1,5 @@
 import math
+from enum import Enum
 from typing import NamedTuple, Self
 
 THRESHOLD = 1e-6  # Threshold for floating-point comparison in equality check.
@@ -95,3 +96,18 @@ class Vector2(NamedTuple):
 
     def __str__(self) -> str:
         return f"Vector2({self.x}, {self.y})"
+
+
+class Direction(Vector2, Enum):
+    """Enum representing the four cardinal directions."""
+
+    STOP = 0, 0
+    UP = 0, -1
+    DOWN = 0, 1
+    LEFT = -1, 0
+    RIGHT = 1, 0
+
+    @property
+    def vector(self) -> Vector2:
+        """Return the vector representation of the direction."""
+        return self.value

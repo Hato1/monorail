@@ -1,18 +1,7 @@
-from enum import Enum
-
 import pygame as pg
 
 from monorail import constants
-from monorail.utils.vector import Vector2
-
-
-class Direction(Vector2, Enum):
-    """Enum representing the four cardinal directions."""
-
-    UP = 0, -1
-    DOWN = 0, 1
-    LEFT = -1, 0
-    RIGHT = 1, 0
+from monorail.utils.vector import Direction, Vector2
 
 
 class Node:
