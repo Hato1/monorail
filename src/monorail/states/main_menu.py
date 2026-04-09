@@ -1,7 +1,7 @@
 import pygame as pg
 
-import my_game.states.game as game
-from my_game.utils.state_manager import State
+import monorail.states.game as game
+from monorail.utils.state_manager import State
 
 
 class MainMenu(State):

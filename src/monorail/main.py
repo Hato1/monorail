@@ -2,10 +2,10 @@
 
 import pygame as pg
 
-import my_game.initialise_pygame  # noqa: F401
-from my_game.states.game import Game
-from my_game.states.main_menu import MainMenu
-from my_game.utils.state_manager import State, StateManager
+import monorail.initialise_pygame  # noqa: F401
+from monorail.states.game import Game
+from monorail.states.main_menu import MainMenu
+from monorail.utils.state_manager import State, StateManager
 
 ORIGINAL_CAPTION = "My Game"
 SCREEN_SIZE = (128, 128)

@@ -3,9 +3,9 @@ from typing import Any, Self
 
 import pygame as pg
 
-import my_game.states.main_menu as main_menu
-from my_game.utils.asset_manager import Images, UIElements
-from my_game.utils.state_manager import State
+import monorail.states.main_menu as main_menu
+from monorail.utils.asset_manager import Images, UIElements
+from monorail.utils.state_manager import State
 
 
 def get_random_position_on_rect_perimeter(rect: pg.Rect) -> pg.Vector2:
@@ -124,7 +124,7 @@ class Game(State):
     MONSTER_INTERVAL_DECREASE_RATE = 0.02  # Rate at which monster spawn interval decreases.
     MINIMUM_MONSTER_INTERVAL = 0.1  # Minimum seconds between monster spawns.
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.monster_meter: float
         self.monster_interval: float

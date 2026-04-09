@@ -1,5 +1,5 @@
 [project]
-name = "my_game"
+name = "monorail"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -11,7 +11,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "mypy>=1.17.1", # Static type checker (Note: Replace with Ty when released?).
+    "mypy>=1.18.2", # Static type checker (Note: Replace with Ty when released?).
     "pre-commit>=4.3.0", # See .pre-commit-config.yaml
     "ruff>=0.12.11", # Linter.
     "pytest>=8.4.2", # Testing framework.
@@ -20,7 +20,7 @@ dev = [
 ]
 
 [project.scripts]
-run-game = "my_game.main:main"
+run-game = "monorail.main:main"
 
 # Including this to install project files into venv.
 [build-system]

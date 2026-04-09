@@ -145,7 +145,7 @@ class State(ABC):
             Must be implemented by subclasses.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         # Time in seconds since the State started.
         self.start_time: float = 0.0
         # Current time in seconds since the program launched.
