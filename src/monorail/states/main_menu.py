@@ -1,6 +1,6 @@
 import pygame as pg
 
-import monorail.states.game as game
+from monorail.states import game
 from monorail.utils.state_manager import State
 
 

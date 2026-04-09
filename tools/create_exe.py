@@ -20,10 +20,10 @@ Pyinstaller Docs: https://pyinstaller.org/en/stable/usage.html
 """
 
 import sys
+import tomllib
 from importlib.resources import files
 
 import PyInstaller.__main__ as pyinstaller  # type: ignore[import-untyped]
-import tomllib
 
 PLATFORM = sys.platform
 if PLATFORM.startswith("darwin"):

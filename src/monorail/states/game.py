@@ -3,7 +3,7 @@ from typing import Any, Self
 
 import pygame as pg
 
-import monorail.states.main_menu as main_menu
+from monorail.states import main_menu
 from monorail.utils.asset_manager import Images, UIElements
 from monorail.utils.state_manager import State
 
@@ -182,8 +182,7 @@ class Game(State):
     def update_difficulty(self, dt: float):
         """Gradually increase game difficulty over time."""
         self.monster_interval -= self.MONSTER_INTERVAL_DECREASE_RATE * dt
-        if self.monster_interval < self.MINIMUM_MONSTER_INTERVAL:
-            self.monster_interval = self.MINIMUM_MONSTER_INTERVAL
+        self.monster_interval = max(self.monster_interval, self.MINIMUM_MONSTER_INTERVAL)
 
     def update(self, surface_rect, keys, current_time, dt):
         self.update_monster_spawner(surface_rect, dt)
