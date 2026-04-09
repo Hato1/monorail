@@ -6,6 +6,7 @@ class Vector2:
     """A simple 2D vector class for basic vector operations.
 
     TODO: Implement copy or type conversion methods if needed in the future.
+    TODO: Inherit from Pygame's Vector2?
     """
 
     THRESHOLD = 1e-6  # Threshold for floating-point comparison in equality check.

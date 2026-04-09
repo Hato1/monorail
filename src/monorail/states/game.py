@@ -3,9 +3,11 @@ from typing import Any, Self
 
 import pygame as pg
 
+from monorail.entities.monorail import Monorail
 from monorail.states import main_menu
-from monorail.utils.asset_manager import Images, UIElements
+from monorail.utils.asset_manager import Images
 from monorail.utils.state_manager import State
+from monorail.utils.vector import Vector2
 
 
 def get_random_position_on_rect_perimeter(rect: pg.Rect) -> pg.Vector2:
@@ -120,23 +122,13 @@ class Player:
 
 
 class Game(State):
-    DEFAULT_MONSTER_INTERVAL = 2  # Seconds between monster spawns.
-    MONSTER_INTERVAL_DECREASE_RATE = 0.02  # Rate at which monster spawn interval decreases.
-    MINIMUM_MONSTER_INTERVAL = 0.1  # Minimum seconds between monster spawns.
-
     def __init__(self) -> None:
         super().__init__()
-        self.monster_meter: float
-        self.monster_interval: float
-        self.monsters: list[Monster]
-        self.player: Player
+        self.monorail: Monorail
 
     def startup(self, current_time: float, persistant: dict[str, Any], previous: type[State], surface_rect: pg.Rect):
         super().startup(current_time, persistant, previous, surface_rect)
-        self.monster_meter = 0
-        self.monster_interval = self.DEFAULT_MONSTER_INTERVAL
-        self.monsters = []
-        self.player = Player(pg.Vector2(surface_rect.center))
+        self.monorail = Monorail(position=Vector2(*surface_rect.center))
 
     def get_event(self, event: pg.Event):
         if event.type == pg.KEYDOWN:
@@ -147,62 +139,9 @@ class Game(State):
                 # and to keep the reference short.
                 self.next = main_menu.MainMenu
 
-    def draw_healthbar(self, surface):
-        """Draws the player's health as hearts in the top-left corner."""
-        heart_full = UIElements.HEART_FULL.load()
-        empty_heart = UIElements.HEART_EMPTY.load()
-
-        for i in range(self.player.max_health):
-            heart = heart_full if i < self.player.health else empty_heart
-            surface.blit(heart, (5 + i * (heart.get_width() + 5), 5))
-
-    def update_monster_spawner(self, surface_rect: pg.Rect, dt: float):
-        """Spawns monsters over time based on the monster meter and interval."""
-        self.monster_meter += dt
-        while self.monster_meter > self.monster_interval:
-            new_monster = Monster.create_monster(surface_rect, self.player.position)
-            self.monsters.append(new_monster)
-            self.monster_meter -= self.monster_interval
-
-    def update_player_movement(self, surface_rect: pg.Rect, keys, dt: float):
-        """Update player position based on input keys."""
-        movement = pg.Vector2(0, 0)
-        if keys[pg.K_w] or keys[pg.K_UP]:
-            movement.y -= 1
-        if keys[pg.K_s] or keys[pg.K_DOWN]:
-            movement.y += 1
-        if keys[pg.K_a] or keys[pg.K_LEFT]:
-            movement.x -= 1
-        if keys[pg.K_d] or keys[pg.K_RIGHT]:
-            movement.x += 1
-        # TODO: Controller support?
-        self.player.increase_velocity(movement)
-        self.player.update(surface_rect, dt)
-
-    def update_difficulty(self, dt: float):
-        """Gradually increase game difficulty over time."""
-        self.monster_interval -= self.MONSTER_INTERVAL_DECREASE_RATE * dt
-        self.monster_interval = max(self.monster_interval, self.MINIMUM_MONSTER_INTERVAL)
-
     def update(self, surface_rect, keys, current_time, dt):
-        self.update_monster_spawner(surface_rect, dt)
-        self.update_player_movement(surface_rect, keys, dt)
-
-        for monster in self.monsters:
-            monster.update(dt)
-            if monster.rect.colliderect(self.player.rect):
-                self.player.health -= 1
-                self.monsters.remove(monster)
-
-        if self.player.health <= 0:
-            self.done = True
-            self.next = main_menu.MainMenu
-
-        self.update_difficulty(dt)
+        self.monorail.update(dt, keys)
 
     def draw(self, surface: pg.Surface, keys, current_time: float, dt: float):
         surface.fill(pg.Color("gray"))
-        for monster in self.monsters:
-            monster.draw(surface, current_time)
-        self.player.draw(surface)
-        self.draw_healthbar(surface)
+        self.monorail.draw(surface)
