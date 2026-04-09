@@ -77,4 +77,4 @@ class Monorail:
     def draw(self, surface: pg.Surface) -> None:
         """Draw the monorail to a given surface."""
         # TODO: Replace with sprite when available.
-        pg.draw.circle(surface, self.color, (self.position.x, self.position.y), constants.TILE_SIZE / 2)
+        pg.draw.circle(surface, self.color, self.position, constants.TILE_SIZE / 2)
