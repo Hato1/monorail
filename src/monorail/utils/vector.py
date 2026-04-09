@@ -27,6 +27,8 @@ class Vector2(NamedTuple):
         > Vector2(4, 6)
         Vector2(1, 2) * 5
         > Vector2(5, 10)
+        Vector2(3, 4) == (3.0000001, 4.0000001)
+        > True
 
     TODO: Implement copy or type conversion methods if needed in the future.
     """
@@ -34,15 +36,22 @@ class Vector2(NamedTuple):
     x: float
     y: float
 
+    def check_compatibility(self, other: object):
+        if isinstance(other, tuple):
+            if len(other) != len(self):
+                raise ValueError(f"Tuple must have exactly {len(self)} elements to be compatible with Vector2.")
+            if not all(isinstance(coord, (int, float)) for coord in other):
+                raise TypeError("All elements of the tuple must be int or float to be compatible with Vector2.")
+        else:
+            raise TypeError(f"Unsupported type for operation with Vector2: {type(other)}")
+
     def __add__(self, other: Self | tuple) -> Self:
-        if not isinstance(other, type(self)):
-            raise NotImplementedError(f"Addition not supported between instances of 'Vector2' and '{type(other)}'")
-        return self.__class__(self.x + other.x, self.y + other.y)
+        self.check_compatibility(other)
+        return self.__class__(self.x + other[0], self.y + other[1])
 
     def __sub__(self, other: Self | tuple) -> Self:
-        if not isinstance(other, type(self)):
-            raise NotImplementedError(f"Subtraction not supported between instances of 'Vector2' and '{type(other)}'")
-        return self.__class__(self.x - other.x, self.y - other.y)
+        self.check_compatibility(other)
+        return self.__class__(self.x - other[0], self.y - other[1])
 
     def __mul__(self, scalar: float) -> Self:  # type: ignore[override]
         return self.__class__(self.x * scalar, self.y * scalar)
@@ -52,13 +61,15 @@ class Vector2(NamedTuple):
             raise ValueError("Cannot divide by zero.")
         return self.__class__(self.x / scalar, self.y / scalar)
 
-    def __neg__(self):
+    def __neg__(self) -> Self:
         return self.__class__(-self.x, -self.y)
 
     def __eq__(self, other: object) -> bool:
-        if not isinstance(other, type(self)):
-            raise NotImplementedError(f"Cannot compare Vector2 with non-Vector2 type: '{type(other)}'")
-        return abs(self.x - other.x) < THRESHOLD and abs(self.y - other.y) < THRESHOLD
+        if not isinstance(other, type(self) | tuple):
+            return False
+        if len(other) != len(self):
+            return False
+        return abs(self.x - other[0]) < THRESHOLD and abs(self.y - other[1]) < THRESHOLD
 
     def length_squared(self) -> float:
         """Returns the square of the length of the vector.

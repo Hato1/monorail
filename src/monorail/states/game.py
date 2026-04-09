@@ -3,7 +3,9 @@ from typing import Any, Self
 
 import pygame as pg
 
+from monorail import constants
 from monorail.entities.monorail import Monorail
+from monorail.entities.nodes import NodeGraph
 from monorail.states import main_menu
 from monorail.utils.asset_manager import Images
 from monorail.utils.state_manager import State
@@ -129,6 +131,8 @@ class Game(State):
     def startup(self, current_time: float, persistant: dict[str, Any], previous: type[State], surface_rect: pg.Rect):
         super().startup(current_time, persistant, previous, surface_rect)
         self.monorail = Monorail(position=Vector2(*surface_rect.center))
+        self.node_graph = NodeGraph()
+        self.node_graph.setup_test_nodes()
 
     def get_event(self, event: pg.Event):
         if event.type == pg.KEYDOWN:
@@ -144,4 +148,9 @@ class Game(State):
 
     def draw(self, surface: pg.Surface, keys, current_time: float, dt: float):
         surface.fill(pg.Color("gray"))
+        for i in range(0, surface.get_width(), constants.TILE_SIZE):
+            pg.draw.line(surface, pg.Color("darkgray"), (i, 0), (i, surface.get_height()))
+        for j in range(0, surface.get_height(), constants.TILE_SIZE):
+            pg.draw.line(surface, pg.Color("darkgray"), (0, j), (surface.get_width(), j))
+        self.node_graph.draw(surface)
         self.monorail.draw(surface)
