@@ -15,7 +15,8 @@ def main():
     # Initialization
     pg.init()
     screen = pg.display.set_mode(SCREEN_SIZE, pg.SCALED)
-    assert screen is not None, "Pygame display surface not initialized."
+    if screen is None:
+        raise RuntimeError("Pygame display surface not initialized.")
     pg.display.set_caption(DEFAULT_CAPTION)
 
     # Add states to StateManager here.

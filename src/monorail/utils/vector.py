@@ -27,7 +27,8 @@ class Vector2:
         return type(self)(self.x * scalar, self.y * scalar)
 
     def __truediv__(self, scalar: float) -> Self:
-        assert scalar != 0, "Cannot divide by zero."
+        if scalar == 0:
+            raise ValueError("Cannot divide by zero.")
         return type(self)(self.x / scalar, self.y / scalar)
 
     def __eq__(self, other: object) -> bool:
@@ -53,6 +54,9 @@ class Vector2:
         if length == 0:
             return type(self)(0, 0)
         return self / length
+
+    def __hash__(self) -> int:
+        return hash((self.x, self.y))
 
     def __str__(self) -> str:
         return f"Vector2({self.x}, {self.y})"

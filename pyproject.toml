@@ -39,12 +39,19 @@ extend-select = [
   "I",       # isort
   "N",       # pep8-naming
   "PIE",     # flake8-pie
+  "PLW",     # pylint warning
   "PLE",     # pylint error
   "PLR",     # pylint refactor
+  "PTH",     # Use Pathlib instead of os.path
+  "PT",      # flake8-pytest-style
   "RUF",     # ruff-specific rules
-  "PGH004",  # blanket noqa comments
+  "PGH",     # blanket noqa and type-ignore comments
+  "FBT",     # flake8-boolean-trap
   "UP",      # pyupgrade
+  "NPY",     # NumPy-specific rules
+  "EXE",     # flake8-executable
   "C4",      # flake8-comprehensions
+  "C90",     # McCabe complexity
   "SIM101",  # merge duplicate isinstance calls
   "SIM201", "SIM202", "SIM222", "SIM223",  # flake8-simplify
   "FURB168", # Prefer is operator over isinstance for None checks

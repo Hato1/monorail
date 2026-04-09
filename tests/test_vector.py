@@ -46,7 +46,7 @@ def test_vector_div():
 
 def test_vector_division_by_zero():
     v1 = Vector2(1, 2)
-    with pytest.raises(AssertionError):
+    with pytest.raises(ValueError, match="Cannot divide by zero\\."):
         _ = v1 / 0
 
 
