@@ -9,7 +9,6 @@ from monorail.entities.nodes import NodeGraph
 from monorail.states import main_menu
 from monorail.utils.asset_manager import Images
 from monorail.utils.state_manager import State
-from monorail.utils.vector import Vector2
 
 
 def get_random_position_on_rect_perimeter(rect: pg.Rect) -> pg.Vector2:
@@ -130,9 +129,9 @@ class Game(State):
 
     def startup(self, current_time: float, persistant: dict[str, Any], previous: type[State], surface_rect: pg.Rect):
         super().startup(current_time, persistant, previous, surface_rect)
-        self.monorail = Monorail(position=Vector2(*surface_rect.center))
         self.node_graph = NodeGraph()
         self.node_graph.setup_test_nodes()
+        self.monorail = Monorail(node=self.node_graph.nodes[0])
 
     def get_event(self, event: pg.Event):
         if event.type == pg.KEYDOWN:
@@ -142,6 +141,8 @@ class Game(State):
                 # circular-import issues that arise from `from ... import ...`
                 # and to keep the reference short.
                 self.next = main_menu.MainMenu
+            if event.key == pg.K_p:
+                print(repr(self.node_graph))
 
     def update(self, surface_rect, keys, current_time, dt):
         self.monorail.update(dt, keys)

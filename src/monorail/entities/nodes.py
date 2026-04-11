@@ -28,7 +28,7 @@ class Node:
 
     def draw_node(self, surface: pg.Surface):
         """Draw the node as a small circle on the given surface for debug purposes."""
-        pg.draw.circle(surface, constants.NODE_COLOR, self.position, constants.TILE_SIZE // 2)
+        pg.draw.circle(surface, constants.NODE_COLOR, self.position, constants.TILE_SIZE // 3)
 
     def draw_edges(self, surface: pg.Surface):
         """Draw edges from this node to its neighbors for debug purposes."""
@@ -56,13 +56,13 @@ class NodeGraph:
                 node.draw_node(surface)
 
     def setup_test_nodes(self):
-        node_a = Node(Vector2(80, 80))
-        node_b = Node(Vector2(160, 80))
-        node_c = Node(Vector2(80, 160))
-        node_d = Node(Vector2(160, 160))
-        node_e = Node(Vector2(208, 160))
-        node_f = Node(Vector2(80, 320))
-        node_g = Node(Vector2(208, 320))
+        node_a = Node(Vector2(2, 2) * constants.TILE_SIZE)
+        node_b = Node(Vector2(4, 2) * constants.TILE_SIZE)
+        node_c = Node(Vector2(2, 4) * constants.TILE_SIZE)
+        node_d = Node(Vector2(4, 4) * constants.TILE_SIZE)
+        node_e = Node(Vector2(5, 4) * constants.TILE_SIZE)
+        node_f = Node(Vector2(2, 8) * constants.TILE_SIZE)
+        node_g = Node(Vector2(5, 8) * constants.TILE_SIZE)
         node_a.add_neighbor(Direction.RIGHT, node_b)
         node_a.add_neighbor(Direction.DOWN, node_c)
         node_b.add_neighbor(Direction.LEFT, node_a)
@@ -80,3 +80,34 @@ class NodeGraph:
         node_g.add_neighbor(Direction.UP, node_e)
         node_g.add_neighbor(Direction.LEFT, node_f)
         self.nodes = [node_a, node_b, node_c, node_d, node_e, node_f, node_g]
+
+    def __repr__(self) -> str:
+        # Create a grid representation of the node graph for debugging purposes.
+        biggest_x = int(max(node.position.x for node in self.nodes))
+        biggest_y = int(max(node.position.y for node in self.nodes))
+        grid = [
+            ["█" for _ in range(biggest_x // constants.TILE_SIZE + 1)]
+            for _ in range(biggest_y // constants.TILE_SIZE + 1)
+        ]
+
+        # Mark nodes with "+"
+        for node in self.nodes:
+            pos = node.position / constants.TILE_SIZE
+            grid[int(pos.y)][int(pos.x)] = "+"
+        # Mark edges with "-" or "|" depending on their direction.
+        for node in self.nodes:
+            for direction, neighbor in node.neighbors.items():
+                if neighbor:
+                    replacing = node.position / constants.TILE_SIZE
+                    while True:
+                        replacing += direction.vector
+                        if grid[int(replacing.y)][int(replacing.x)] == "+":
+                            break
+                        else:
+                            char = "|" if direction in (Direction.UP, Direction.DOWN) else "-"
+                            grid[int(replacing.y)][int(replacing.x)] = char
+
+        out = "NodeGraph:\n"
+        for row in grid:
+            out += "".join(row) + "\n"
+        return out
