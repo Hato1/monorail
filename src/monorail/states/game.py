@@ -3,6 +3,7 @@ from typing import Any
 import pygame as pg
 
 from monorail import constants
+from monorail.entities.cursor import Cursor
 from monorail.entities.monorail import Monorail
 from monorail.entities.nodes import NodeGraph
 from monorail.states import main_menu
@@ -13,6 +14,7 @@ class Game(State):
     def __init__(self) -> None:
         super().__init__()
         self.monorail: Monorail
+        self.cursor: Cursor = Cursor()
 
     def startup(self, current_time: float, persistant: dict[str, Any], previous: type[State], surface_rect: pg.Rect):
         super().startup(current_time, persistant, previous, surface_rect)
@@ -33,6 +35,7 @@ class Game(State):
 
     def update(self, surface_rect, keys, current_time, dt):
         self.monorail.update(dt, keys)
+        self.cursor.update()
 
     def draw(self, surface: pg.Surface, keys, current_time: float, dt: float):
         surface.fill(pg.Color("gray"))
@@ -42,3 +45,4 @@ class Game(State):
             pg.draw.line(surface, pg.Color("darkgray"), (0, j), (surface.get_width(), j))
         self.node_graph.draw(surface)
         self.monorail.draw(surface)
+        self.cursor.draw(surface)
