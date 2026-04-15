@@ -29,7 +29,7 @@ UI_PATH = ASSETS_PATH / "ui"
 
 
 @unique
-class Images(Enum):
+class Image(Enum):
     BANK = "tiles/bank.png"
     RADIO = "tiles/radio.png"
 
@@ -41,7 +41,7 @@ class Images(Enum):
 
 
 @unique
-class Sounds(Enum):
+class Sound(Enum):
     # Web builds with PygBag only support OGG sounds.
     EXPLOSION = "explosion.wav"
     SHOOT = "shoot.wav"
@@ -56,7 +56,7 @@ class Sounds(Enum):
 
 
 @unique
-class Fonts(Enum):
+class Font(Enum):
     ARIAL = "arial.ttf"
     COMIC_SANS = "comic_sans.ttf"
 
@@ -69,7 +69,7 @@ class Fonts(Enum):
 
 
 @unique
-class Levels(Enum):
+class Level(Enum):
     LEVEL_1 = "level_1.json"
     LEVEL_2 = "level_2.json"
 
@@ -81,7 +81,7 @@ class Levels(Enum):
 
 
 @unique
-class UIElements(Enum):
+class UIElement(Enum):
     HEART_FULL = "healthbar/heart_full.png"
     HEART_EMPTY = "healthbar/heart_empty.png"
     NUMBER_0 = "numbers/0.png"

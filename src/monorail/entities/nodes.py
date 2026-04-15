@@ -28,6 +28,23 @@ class RoadNode:
         self.neighbors[direction] = neighbor
         neighbor.neighbors[-direction] = self
 
+    def remove_neighbor(self, direction: Direction):
+        """Remove the neighbor in the given direction."""
+        neighbor = self.neighbors[direction]
+        if neighbor:
+            self.neighbors[direction] = None
+            neighbor.neighbors[-direction] = None
+        else:
+            print(f"Warning: No neighbor to remove in direction {direction} from node at {self.position}")
+
+    def remove_all_neighbors(self):
+        """Remove all neighbors from this node.
+
+        Useful for when a node is being deleted and we want to clean up all references to it from its neighbors.
+        """
+        for direction in self.neighbors:
+            self.remove_neighbor(direction)
+
     def draw_node(self, surface: pg.Surface):
         """Draw the node as a small circle on the given surface for debug purposes."""
         pg.draw.circle(surface, constants.NODE_COLOR, self.position, constants.TILE_SIZE // 3)
