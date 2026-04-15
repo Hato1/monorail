@@ -4,8 +4,10 @@ from monorail import constants
 from monorail.utils.vector import Direction, Vector2
 
 
-class Node:
-    """Class representing a node in the pathfinding graph.
+class RoadNode:
+    """Class representing a node in the monorail track graph.
+
+    Each node represents a point on the track where cars can be, and edges between nodes represent possible paths for cars to take.
 
     Attributes:
         position: The position of the node as a Vector2.
@@ -14,14 +16,14 @@ class Node:
 
     def __init__(self, position: Vector2):
         self.position: Vector2 = position
-        self.neighbors: dict[Direction, Node | None] = {
+        self.neighbors: dict[Direction, RoadNode | None] = {
             Direction.UP: None,
             Direction.DOWN: None,
             Direction.LEFT: None,
             Direction.RIGHT: None,
         }
 
-    def add_neighbor(self, direction: Direction, neighbor: Node):
+    def add_neighbor(self, direction: Direction, neighbor: RoadNode):
         """Add a neighbor in the given direction."""
         self.neighbors[direction] = neighbor
         neighbor.neighbors[-direction] = self
@@ -45,7 +47,7 @@ class NodeGraph:
     """
 
     def __init__(self):
-        self.nodes: list[Node] = []
+        self.nodes: list[RoadNode] = []
 
     def draw(self, surface: pg.Surface):
         """Render all nodes and edges in the graph."""
@@ -56,13 +58,13 @@ class NodeGraph:
                 node.draw_node(surface)
 
     def setup_test_nodes(self):
-        node_a = Node(Vector2(2, 2) * constants.TILE_SIZE)
-        node_b = Node(Vector2(4, 2) * constants.TILE_SIZE)
-        node_c = Node(Vector2(2, 4) * constants.TILE_SIZE)
-        node_d = Node(Vector2(4, 4) * constants.TILE_SIZE)
-        node_e = Node(Vector2(5, 4) * constants.TILE_SIZE)
-        node_f = Node(Vector2(2, 8) * constants.TILE_SIZE)
-        node_g = Node(Vector2(5, 8) * constants.TILE_SIZE)
+        node_a = RoadNode(Vector2(2, 2) * constants.TILE_SIZE)
+        node_b = RoadNode(Vector2(4, 2) * constants.TILE_SIZE)
+        node_c = RoadNode(Vector2(2, 4) * constants.TILE_SIZE)
+        node_d = RoadNode(Vector2(4, 4) * constants.TILE_SIZE)
+        node_e = RoadNode(Vector2(5, 4) * constants.TILE_SIZE)
+        node_f = RoadNode(Vector2(2, 8) * constants.TILE_SIZE)
+        node_g = RoadNode(Vector2(5, 8) * constants.TILE_SIZE)
         node_a.add_neighbor(Direction.RIGHT, node_b)
         node_a.add_neighbor(Direction.DOWN, node_c)
         node_b.add_neighbor(Direction.LEFT, node_a)

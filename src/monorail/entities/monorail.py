@@ -4,7 +4,7 @@ import pygame as pg
 from pygame import Color
 
 from monorail import constants
-from monorail.entities.nodes import Node
+from monorail.entities.nodes import RoadNode
 from monorail.utils.vector import Direction, Vector2
 
 
@@ -50,13 +50,13 @@ class Monorail:
 
     def __init__(
         self,
-        node: Node,
+        node: RoadNode,
         speed_multiplier: float = 1.0,
         name: str = "Manwell",
     ):
         self.name = name
-        self.node: Node = node
-        self.target: Node = node
+        self.node: RoadNode = node
+        self.target: RoadNode = node
         self.position: Vector2
         self.set_position()
         self.direction = Direction.STOP
@@ -79,7 +79,7 @@ class Monorail:
         to_position = self.position - self.node.position
         return to_position.length_squared() >= to_target.length_squared()
 
-    def get_new_target(self, direction: Direction) -> Node:
+    def get_new_target(self, direction: Direction) -> RoadNode:
         """Calculate the new target node based on the current direction if available."""
         if direction == Direction.STOP:
             return self.node
