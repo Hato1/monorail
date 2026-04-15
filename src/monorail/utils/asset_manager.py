@@ -30,8 +30,8 @@ UI_PATH = ASSETS_PATH / "ui"
 
 @unique
 class Images(Enum):
-    MONSTER_FRAME_0 = "monster/frame_0.png"
-    MONSTER_FRAME_1 = "monster/frame_1.png"
+    BANK = "tiles/bank.png"
+    RADIO = "tiles/radio.png"
 
     @cache
     def load(self) -> pg.Surface:
