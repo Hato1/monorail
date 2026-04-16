@@ -11,10 +11,10 @@ class Shelf:
     gap_between_items = 3
     padding_between_title_and_items = 2
 
-    def __init__(self, price: int, message: str, items: tuple[tile.TileTypeRail, ...]):
+    def __init__(self, price: int, message: str, items: tuple[type[tile.TileTypeRail], ...]):
         self.price = price
         self.message = message
-        self.items: tuple[tile.TileTypeRail, ...] = items
+        self.items: tuple[type[tile.TileTypeRail], ...] = items
         self.item_rects: list[pg.Rect] = []  # List of rects for each item, used for click detection
 
     def draw_title(self, surface: pg.Surface, position: Vector2) -> int:
@@ -30,7 +30,8 @@ class Shelf:
             # Draw a light gray background for the item to make it stand out against the sidebar background
             item_rect = pg.Rect((*position, constants.TILE_SIZE, constants.TILE_SIZE))
             pg.draw.rect(surface, pg.Color("lightgray"), item_rect)
-            item.draw(surface, position)
+            image = item.image.load()
+            surface.blit(image, position)
             self.item_rects.append(item_rect)  # Store the rect for click detection
             position += (constants.TILE_SIZE + self.gap_between_items, 0)  # Move right for the next item
 
@@ -45,30 +46,30 @@ class Shelf:
 
 class ShelfStraight(Shelf):
     def __init__(self):
-        items = (tile.TileTypeRailNS(), tile.TileTypeRailEW())
+        items = (tile.TileTypeRailNS, tile.TileTypeRailEW)
         super().__init__(1, "Straight Rail", items)
 
 
 class ShelfCurve(Shelf):
     def __init__(self):
-        items = (tile.TileTypeRailNE(), tile.TileTypeRailSE(), tile.TileTypeRailSW(), tile.TileTypeRailNW())
+        items = (tile.TileTypeRailNE, tile.TileTypeRailSE, tile.TileTypeRailSW, tile.TileTypeRailNW)
         super().__init__(2, "Curved Rail", items)
 
 
 class ShelfIntersection(Shelf):
     def __init__(self):
-        items = (tile.TileTypeRailNES(), tile.TileTypeRailESW(), tile.TileTypeRailSWN(), tile.TileTypeRailNWE())
+        items = (tile.TileTypeRailNES, tile.TileTypeRailESW, tile.TileTypeRailSWN, tile.TileTypeRailNWE)
         super().__init__(5, "Intersections", items)
 
 
 class ShelfStation(Shelf):
     def __init__(self):
-        items = (tile.TileTypeRailNESW(),)
+        items = (tile.TileTypeRailNESW,)
         super().__init__(9, "Stations", items)
 
 
 class Shop:
-    def __init__(self):
+    def __init__(self) -> None:
         self.shelves: list[Shelf] = []
         self.shelves.append(ShelfStraight())
         self.shelves.append(ShelfCurve())

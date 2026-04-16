@@ -10,124 +10,138 @@ from monorail.utils.vector import Direction, Vector2
 class TileType:
     """Class representing different types of tiles in the game."""
 
-    def __init__(self, image: Image = Image.BANK):
-        self.image = image
+    image = Image.BANK
+
+    def __init__(self, tile_grid: TileGrid, position_gd: Vector2, position_px: Vector2):
+        self.tile_grid: TileGrid = tile_grid
+        self.position_gd: Vector2 = position_gd
+        self.position_px: Vector2 = position_px
 
     @property
     def name(self) -> str:
         return type(self).__name__
 
-    def setup(self, tile_grid: TileGrid, grid_position: tuple[int, int]):
+    def get_neighbor(self, direction: Direction):
+        return self.tile_grid.get_neighbor(self.position_gd, direction)
+
+    def setup(self):
         """Perform any additional setup for the tile type."""
         pass
 
-    def draw(self, surface, position: Vector2):
+    def draw(self, surface):
         """Draw the tile type's image at the given position on the surface."""
         image = self.image.load()
-        surface.blit(image, position)
+        surface.blit(image, self.position_px)
 
 
 class TileTypeBank(TileType):
-    def __init__(self):
-        super().__init__(Image.BANK)
+    image = Image.BANK
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
 
 class TileTypeRadio(TileType):
-    def __init__(self):
-        super().__init__(Image.RADIO)
+    image = Image.RADIO
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
 
 class TileTypeRail(TileType):
-    def __init__(self, image: Image, valid_directions: set[Direction]):
-        super().__init__(image)
+    def __init__(self, *args, valid_directions: set[Direction], **kwargs):
+        super().__init__(*args, **kwargs)
         self.neighbors: dict[Direction, TileTypeRail | None] = {direction: None for direction in valid_directions}
 
-    def setup(self, tile_grid: TileGrid, grid_position: tuple[int, int]):
-        """Connect the tile to neighboring rail tiles in the grid."""
-        x, y = grid_position
-        for direction in self.neighbors:
-            neighbor_pos = Vector2(x, y) + direction.value
-            if 0 <= neighbor_pos.x < tile_grid.width and 0 <= neighbor_pos.y < tile_grid.height:
-                neighbor_tile = tile_grid.tiles[int(neighbor_pos.x)][int(neighbor_pos.y)]
-                if isinstance(neighbor_tile, Tile) and isinstance(neighbor_tile.tile_type, TileTypeRail):
-                    neighbor_rail: TileTypeRail = neighbor_tile.tile_type
-                    if -direction in neighbor_rail.neighbors:
-                        self.neighbors[direction] = neighbor_rail
-                        neighbor_rail.neighbors[-direction] = self
+    def get_connected_rail(self, direction: Direction) -> TileTypeRail | None:
+        neighbor = self.get_neighbor(direction)
+        if isinstance(neighbor, TileTypeRail):
+            if direction in self.neighbors and -direction in neighbor.neighbors:
+                return neighbor
+        return None
 
 
 class TileTypeRailNS(TileTypeRail):
-    def __init__(self):
-        super().__init__(Image.RAIL_NS, {Direction.UP, Direction.DOWN})
+    image = Image.RAIL_NS
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs, valid_directions={Direction.UP, Direction.DOWN})
 
 
 class TileTypeRailEW(TileTypeRail):
-    def __init__(self):
-        super().__init__(Image.RAIL_EW, {Direction.LEFT, Direction.RIGHT})
+    image = Image.RAIL_EW
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs, valid_directions={Direction.LEFT, Direction.RIGHT})
 
 
 class TileTypeRailNE(TileTypeRail):
-    def __init__(self):
-        super().__init__(Image.RAIL_NE, {Direction.UP, Direction.RIGHT})
+    image = Image.RAIL_NE
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs, valid_directions={Direction.UP, Direction.RIGHT})
 
 
 class TileTypeRailSE(TileTypeRail):
-    def __init__(self):
-        super().__init__(Image.RAIL_SE, {Direction.RIGHT, Direction.DOWN})
+    image = Image.RAIL_SE
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs, valid_directions={Direction.RIGHT, Direction.DOWN})
 
 
 class TileTypeRailSW(TileTypeRail):
-    def __init__(self):
-        super().__init__(Image.RAIL_SW, {Direction.DOWN, Direction.LEFT})
+    image = Image.RAIL_SW
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs, valid_directions={Direction.DOWN, Direction.LEFT})
 
 
 class TileTypeRailNW(TileTypeRail):
-    def __init__(self):
-        super().__init__(Image.RAIL_NW, {Direction.LEFT, Direction.UP})
+    image = Image.RAIL_NW
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs, valid_directions={Direction.LEFT, Direction.UP})
 
 
 class TileTypeRailNES(TileTypeRail):
-    def __init__(self):
-        super().__init__(Image.RAIL_NES, {Direction.UP, Direction.RIGHT, Direction.DOWN})
+    image = Image.RAIL_NES
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs, valid_directions={Direction.UP, Direction.RIGHT, Direction.DOWN})
 
 
 class TileTypeRailESW(TileTypeRail):
-    def __init__(self):
-        super().__init__(Image.RAIL_ESW, {Direction.RIGHT, Direction.DOWN, Direction.LEFT})
+    image = Image.RAIL_ESW
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs, valid_directions={Direction.RIGHT, Direction.DOWN, Direction.LEFT})
 
 
 class TileTypeRailSWN(TileTypeRail):
-    def __init__(self):
-        super().__init__(Image.RAIL_NSW, {Direction.DOWN, Direction.LEFT, Direction.UP})
+    image = Image.RAIL_NSW
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs, valid_directions={Direction.DOWN, Direction.LEFT, Direction.UP})
 
 
 class TileTypeRailNWE(TileTypeRail):
-    def __init__(self):
-        super().__init__(Image.RAIL_NEW, {Direction.LEFT, Direction.UP, Direction.RIGHT})
+    image = Image.RAIL_NEW
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs, valid_directions={Direction.LEFT, Direction.UP, Direction.RIGHT})
 
 
 class TileTypeRailNESW(TileTypeRail):
-    def __init__(self):
-        super().__init__(Image.RAIL_NESW, {Direction.UP, Direction.RIGHT, Direction.DOWN, Direction.LEFT})
+    image = Image.RAIL_NESW
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(
+            *args, **kwargs, valid_directions={Direction.UP, Direction.RIGHT, Direction.DOWN, Direction.LEFT}
+        )
 
 
-class Tile:
-    def __init__(self, position: Vector2, tile_type: TileType):
-        self.position = position
-        self.tile_type = tile_type
-
-    def setup(self):
-        """Perform any additional setup for the tile based on its type."""
-        if isinstance(self.tile_type, TileTypeRail):
-            # For road tiles, we might want to initialize additional properties or connections here.
-            pass
-
-    def draw(self, surface):
-        """Draw the tile on the given surface."""
-        self.tile_type.draw(surface, self.position)
-
-    def __repr__(self):
-        return f"Tile(position={self.position}, tile_type='{self.tile_type}')"
+#     def __repr__(self):
+#         return f"Tile(position={self.position}, tile_type='{self.tile_type}')"
 
 
 class TileGrid:
@@ -142,16 +156,27 @@ class TileGrid:
         """
         self.width = width
         self.height = height
-        self.tiles: list[list[Tile | None]] = [[None for _ in range(height)] for _ in range(width)]
+        self.tiles: list[list[TileType | None]] = [[None for _ in range(height)] for _ in range(width)]
 
-    def set_tile(self, position: tuple[int, int], tile_type: TileType):
+        center = Vector2(self.width, self.height) // 2
+        center_px = center * constants.TILE_SIZE
+        self.start_tile = TileTypeRailNS(self, center, center_px)
+        center_asint = center.as_int()
+        self.tiles[center_asint[0]][center_asint[1]] = self.start_tile
+
+    def get_neighbor(self, position_gd: Vector2, direction: Direction) -> TileType | None:
+        x, y = (position_gd + direction).as_int()
+        if 0 <= x < self.width and 0 <= y < self.height:
+            return self.tiles[x][y]
+        return None
+
+    def set_tile(self, position: tuple[int, int], tile_type: type[TileType]):
         """Set a tile at the given grid coordinates."""
         x, y = position
         if 0 <= x < self.width and 0 <= y < self.height:
             position_px = Vector2(x * constants.TILE_SIZE, y * constants.TILE_SIZE)
-            new_tile = Tile(position_px, tile_type)
+            new_tile = tile_type(self, Vector2(*position), position_px)
             self.tiles[x][y] = new_tile
-            new_tile.setup()  # Call setup to initialize any additional properties based on the tile type
         else:
             raise IndexError(f"Tile coordinates out of bounds: ({x}, {y})")
 

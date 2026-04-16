@@ -2,16 +2,16 @@ import pygame as pg
 
 from monorail import constants
 from monorail.entities.sidebar import Shop
-from monorail.entities.tile import TileGrid
+from monorail.entities.tile import TileGrid, TileType
 from monorail.utils.vector import Vector2
 
 
 class Cursor:
     """Class for managing the cursor position and interactions in the game."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.position = Vector2(0, 0)  # Cursor position in pixels.
-        self.selected_tile_type = None  # The currently selected tile type for placement, if any.
+        self.selected_tile_type: type[TileType] | None = None  # The currently selected tile type for placement, if any.
 
     def handle_mouse_click(self, position: Vector2, tile_grid: TileGrid, shop: Shop):
         """Handle mouse click interactions.

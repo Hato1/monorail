@@ -4,7 +4,7 @@ import pygame as pg
 from pygame import Color
 
 from monorail import constants
-from monorail.entities.nodes import RoadNode
+from monorail.entities.tile import TileTypeRail
 from monorail.utils.vector import Direction, Vector2
 
 
@@ -50,13 +50,13 @@ class Monorail:
 
     def __init__(
         self,
-        node: RoadNode,
+        node: TileTypeRail,
         speed_multiplier: float = 1.0,
         name: str = "Manwell",
     ):
         self.name = name
-        self.node: RoadNode = node
-        self.target: RoadNode = node
+        self.node: TileTypeRail = node
+        self.target: TileTypeRail = node
         self.position: Vector2
         self.set_position()
         self.direction = Direction.STOP
@@ -71,19 +71,19 @@ class Monorail:
 
     def set_position(self) -> None:
         """Set the monorail's position to the center of the current node."""
-        self.position = self.node.position
+        self.position = self.node.position_px
 
     def overshot_target(self) -> bool:
         """Check if the monorail has overshot its target node."""
-        to_target = self.target.position - self.node.position
-        to_position = self.position - self.node.position
+        to_target = self.target.position_px - self.node.position_px
+        to_position = self.position - self.node.position_px
         return to_position.length_squared() >= to_target.length_squared()
 
-    def get_new_target(self, direction: Direction) -> RoadNode:
+    def get_new_target(self, direction: Direction) -> TileTypeRail:
         """Calculate the new target node based on the current direction if available."""
         if direction == Direction.STOP:
             return self.node
-        return self.node.neighbors.get(direction) or self.node
+        return self.node.get_connected_rail(direction) or self.node
 
     def update(self, dt: float, keys) -> None:
         """Update the monorail's position based on its speed and the time since the last frame."""
@@ -96,10 +96,13 @@ class Monorail:
             if self.target != self.node:
                 self.direction = direction
             else:
-                self.direction = Direction.STOP
+                self.target = self.get_new_target(self.direction)
+                if self.target == self.node:
+                    self.direction = Direction.STOP
             self.set_position()
 
     def draw(self, surface: pg.Surface) -> None:
         """Draw the monorail to a given surface."""
         # TODO: Replace with sprite when available.
-        pg.draw.circle(surface, self.color, self.position, constants.TILE_SIZE / 3)
+        half_tile = constants.TILE_SIZE // 2, constants.TILE_SIZE // 2
+        pg.draw.circle(surface, self.color, self.position + half_tile, constants.TILE_SIZE / 3)
