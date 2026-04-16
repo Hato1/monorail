@@ -4,13 +4,13 @@ import pygame as pg
 
 from monorail import constants
 from monorail.utils.asset_manager import Image
-from monorail.utils.vector import Vector2
+from monorail.utils.vector import Direction, Vector2
 
 
 class TileType:
     """Class representing different types of tiles in the game."""
 
-    def __init__(self, image: Image):
+    def __init__(self, image: Image = Image.BANK):
         self.image = image
 
     @property
@@ -31,6 +31,67 @@ class TileTypeBank(TileType):
 class TileTypeRadio(TileType):
     def __init__(self):
         super().__init__(Image.RADIO)
+
+
+class TileTypeRoad(TileType):
+    def __init__(self, image: Image, valid_directions: set[Direction]):
+        super().__init__(image)
+        self.neighbors: dict[Direction, TileTypeRoad | None] = {direction: None for direction in valid_directions}
+
+
+class TileTypeRoadNS(TileTypeRoad):
+    def __init__(self):
+        super().__init__(Image.RAIL_NS, {Direction.UP, Direction.DOWN})
+
+
+class TileTypeRoadEW(TileTypeRoad):
+    def __init__(self):
+        super().__init__(Image.RAIL_EW, {Direction.LEFT, Direction.RIGHT})
+
+
+class TileTypeRoadNE(TileTypeRoad):
+    def __init__(self):
+        super().__init__(Image.RAIL_NE, {Direction.UP, Direction.RIGHT})
+
+
+class TileTypeRoadSE(TileTypeRoad):
+    def __init__(self):
+        super().__init__(Image.RAIL_SE, {Direction.RIGHT, Direction.DOWN})
+
+
+class TileTypeRoadSW(TileTypeRoad):
+    def __init__(self):
+        super().__init__(Image.RAIL_SW, {Direction.DOWN, Direction.LEFT})
+
+
+class TileTypeRoadNW(TileTypeRoad):
+    def __init__(self):
+        super().__init__(Image.RAIL_NW, {Direction.LEFT, Direction.UP})
+
+
+class TileTypeRoadNES(TileTypeRoad):
+    def __init__(self):
+        super().__init__(Image.RAIL_NES, {Direction.UP, Direction.RIGHT, Direction.DOWN})
+
+
+class TileTypeRoadESW(TileTypeRoad):
+    def __init__(self):
+        super().__init__(Image.RAIL_ESW, {Direction.RIGHT, Direction.DOWN, Direction.LEFT})
+
+
+class TileTypeRoadSWN(TileTypeRoad):
+    def __init__(self):
+        super().__init__(Image.RAIL_NSW, {Direction.DOWN, Direction.LEFT, Direction.UP})
+
+
+class TileTypeRoadNWE(TileTypeRoad):
+    def __init__(self):
+        super().__init__(Image.RAIL_NEW, {Direction.LEFT, Direction.UP, Direction.RIGHT})
+
+
+class TileTypeRoadNESW(TileTypeRoad):
+    def __init__(self):
+        super().__init__(Image.RAIL_NESW, {Direction.UP, Direction.RIGHT, Direction.DOWN, Direction.LEFT})
 
 
 class Tile:

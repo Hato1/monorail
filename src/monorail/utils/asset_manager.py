@@ -30,10 +30,20 @@ UI_PATH = ASSETS_PATH / "ui"
 
 @unique
 class Image(Enum):
-    RAIL_STRAIGHT = "tiles/rail/straight.png"
-    RAIL_CURVE = "tiles/rail/curve.png"
-    RAIL_3WAY = "tiles/rail/3way.png"
-    RAIL_INTERSECTION = "tiles/rail/intersection.png"
+    RAIL_NS = "tiles/rail/ns.png"
+    RAIL_EW = "tiles/rail/ew.png"
+
+    RAIL_NE = "tiles/rail/ne.png"
+    RAIL_SE = "tiles/rail/se.png"
+    RAIL_SW = "tiles/rail/sw.png"
+    RAIL_NW = "tiles/rail/nw.png"
+
+    RAIL_NES = "tiles/rail/nes.png"
+    RAIL_NSW = "tiles/rail/nsw.png"
+    RAIL_NEW = "tiles/rail/new.png"
+    RAIL_ESW = "tiles/rail/esw.png"
+
+    RAIL_NESW = "tiles/rail/nesw.png"
 
     BANK = "tiles/bank.png"
     RADIO = "tiles/radio.png"
@@ -62,15 +72,15 @@ class Sound(Enum):
 
 @unique
 class Font(Enum):
-    ARIAL = "arial.ttf"
-    COMIC_SANS = "comic_sans.ttf"
+    m_tiny = "m3x6.ttf"
+    m_small = "m5x7.ttf"
+    m_large = "m6x11.ttf"
 
     @cache
-    def load(self) -> pg.Font:
+    def load(self, size: int = 16) -> pg.Font:
         with as_file(FONTS_PATH / self.value) as path:
             assert path.is_file(), f"Font file not found: {path}"
-            # Default point size is 20; can be changed later.
-            return pg.font.Font(path)
+            return pg.font.Font(path, size)
 
 
 @unique

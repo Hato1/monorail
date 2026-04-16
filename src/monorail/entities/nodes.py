@@ -4,22 +4,24 @@ from monorail import constants
 from monorail.utils.asset_manager import Image
 from monorail.utils.vector import Direction, Vector2
 
-IMAGE_LOOKUP: dict[frozenset[Direction], tuple[Image, int]] = {
+# Convertions from sets of valid directions to the appropriate image and rotation for a node.
+# The angles may seem reversed from what you would expect because Pygame rotations are counterclockwise.
+IMAGE_LOOKUP: dict[frozenset[Direction], Image] = {
     # Straight
-    frozenset({Direction.UP, Direction.DOWN}): (Image.RAIL_STRAIGHT, 0),
-    frozenset({Direction.LEFT, Direction.RIGHT}): (Image.RAIL_STRAIGHT, -90),
+    frozenset({Direction.UP, Direction.DOWN}): Image.RAIL_NS,
+    frozenset({Direction.LEFT, Direction.RIGHT}): Image.RAIL_EW,
     # Corner
-    frozenset({Direction.UP, Direction.RIGHT}): (Image.RAIL_CURVE, 0),
-    frozenset({Direction.RIGHT, Direction.DOWN}): (Image.RAIL_CURVE, -90),
-    frozenset({Direction.DOWN, Direction.LEFT}): (Image.RAIL_CURVE, 180),
-    frozenset({Direction.LEFT, Direction.UP}): (Image.RAIL_CURVE, -270),
+    frozenset({Direction.UP, Direction.RIGHT}): Image.RAIL_NE,
+    frozenset({Direction.RIGHT, Direction.DOWN}): Image.RAIL_SE,
+    frozenset({Direction.DOWN, Direction.LEFT}): Image.RAIL_SW,
+    frozenset({Direction.LEFT, Direction.UP}): Image.RAIL_NW,
     # 3-way
-    frozenset({Direction.UP, Direction.RIGHT, Direction.DOWN}): (Image.RAIL_3WAY, 0),
-    frozenset({Direction.RIGHT, Direction.DOWN, Direction.LEFT}): (Image.RAIL_3WAY, -90),
-    frozenset({Direction.DOWN, Direction.LEFT, Direction.UP}): (Image.RAIL_3WAY, 180),
-    frozenset({Direction.LEFT, Direction.UP, Direction.RIGHT}): (Image.RAIL_3WAY, -270),
+    frozenset({Direction.UP, Direction.RIGHT, Direction.DOWN}): Image.RAIL_NES,
+    frozenset({Direction.RIGHT, Direction.DOWN, Direction.LEFT}): Image.RAIL_NSW,
+    frozenset({Direction.DOWN, Direction.LEFT, Direction.UP}): Image.RAIL_NEW,
+    frozenset({Direction.LEFT, Direction.UP, Direction.RIGHT}): Image.RAIL_ESW,
     # 4-way
-    frozenset({Direction.LEFT, Direction.UP, Direction.RIGHT, Direction.DOWN}): (Image.RAIL_INTERSECTION, 0),
+    frozenset({Direction.LEFT, Direction.UP, Direction.RIGHT, Direction.DOWN}): Image.RAIL_NESW,
 }
 
 
@@ -29,11 +31,11 @@ def get_image(valid_directions: set[Direction]) -> pg.Surface:
     nb. Pygame rotations are counterclockwise, so the angles may seem reversed from what you would expect.
     """
     try:
-        image, angle = IMAGE_LOOKUP[frozenset(valid_directions)]
+        image = IMAGE_LOOKUP[frozenset(valid_directions)]
     except KeyError as err:
         raise ValueError(f"Invalid combination of valid directions: {valid_directions}") from err
 
-    return pg.transform.rotate(image.load(), angle)
+    return image.load()
 
 
 class RoadNode:

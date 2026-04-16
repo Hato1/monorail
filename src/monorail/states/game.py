@@ -7,6 +7,7 @@ from monorail.entities import tile
 from monorail.entities.cursor import Cursor
 from monorail.entities.monorail import Monorail
 from monorail.entities.nodes import NodeGraph
+from monorail.entities.sidebar import Sidebar
 from monorail.entities.tile import TileGrid
 from monorail.states import main_menu
 from monorail.utils.state_manager import State
@@ -23,6 +24,7 @@ class Game(State):
         super().startup(current_time, persistant, previous, surface_rect)
         self.node_graph = NodeGraph()
         self.node_graph.setup_test_nodes()
+        self.sidebar = Sidebar(position=Vector2(constants.GRID_WIDTH * constants.TILE_SIZE, 0))
         self.monorail = Monorail(node=self.node_graph.nodes[0])
         self.tile_grid = TileGrid(constants.GRID_WIDTH, constants.GRID_HEIGHT)
 
@@ -52,3 +54,4 @@ class Game(State):
         self.node_graph.draw(surface)
         self.monorail.draw(surface)
         self.cursor.draw(surface)
+        self.sidebar.draw(surface)
