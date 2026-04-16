@@ -83,7 +83,7 @@ class Monorail:
         """Calculate the new target node based on the current direction if available."""
         if direction == Direction.STOP:
             return self.node
-        return self.node.neighbors[direction] or self.node
+        return self.node.neighbors.get(direction) or self.node
 
     def update(self, dt: float, keys) -> None:
         """Update the monorail's position based on its speed and the time since the last frame."""

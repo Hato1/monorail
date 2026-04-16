@@ -1,7 +1,39 @@
 import pygame as pg
 
 from monorail import constants
+from monorail.utils.asset_manager import Image
 from monorail.utils.vector import Direction, Vector2
+
+IMAGE_LOOKUP: dict[frozenset[Direction], tuple[Image, int]] = {
+    # Straight
+    frozenset({Direction.UP, Direction.DOWN}): (Image.RAIL_STRAIGHT, 0),
+    frozenset({Direction.LEFT, Direction.RIGHT}): (Image.RAIL_STRAIGHT, -90),
+    # Corner
+    frozenset({Direction.UP, Direction.RIGHT}): (Image.RAIL_CURVE, 0),
+    frozenset({Direction.RIGHT, Direction.DOWN}): (Image.RAIL_CURVE, -90),
+    frozenset({Direction.DOWN, Direction.LEFT}): (Image.RAIL_CURVE, 180),
+    frozenset({Direction.LEFT, Direction.UP}): (Image.RAIL_CURVE, -270),
+    # 3-way
+    frozenset({Direction.UP, Direction.RIGHT, Direction.DOWN}): (Image.RAIL_3WAY, 0),
+    frozenset({Direction.RIGHT, Direction.DOWN, Direction.LEFT}): (Image.RAIL_3WAY, -90),
+    frozenset({Direction.DOWN, Direction.LEFT, Direction.UP}): (Image.RAIL_3WAY, 180),
+    frozenset({Direction.LEFT, Direction.UP, Direction.RIGHT}): (Image.RAIL_3WAY, -270),
+    # 4-way
+    frozenset({Direction.LEFT, Direction.UP, Direction.RIGHT, Direction.DOWN}): (Image.RAIL_INTERSECTION, 0),
+}
+
+
+def get_image(valid_directions: set[Direction]) -> pg.Surface:
+    """Get the appropriate image for a node based on its valid directions.
+
+    nb. Pygame rotations are counterclockwise, so the angles may seem reversed from what you would expect.
+    """
+    try:
+        image, angle = IMAGE_LOOKUP[frozenset(valid_directions)]
+    except KeyError as err:
+        raise ValueError(f"Invalid combination of valid directions: {valid_directions}") from err
+
+    return pg.transform.rotate(image.load(), angle)
 
 
 class RoadNode:
@@ -14,17 +46,16 @@ class RoadNode:
         neighbors: A dictionary mapping directions to neighboring nodes that can be reached from this node.
     """
 
-    def __init__(self, position: Vector2):
+    def __init__(self, position: Vector2, valid_directions: set[Direction]):
         self.position: Vector2 = position
-        self.neighbors: dict[Direction, RoadNode | None] = {
-            Direction.UP: None,
-            Direction.DOWN: None,
-            Direction.LEFT: None,
-            Direction.RIGHT: None,
-        }
+        self.neighbors: dict[Direction, RoadNode | None] = {direction: None for direction in valid_directions}
+        self.image = get_image(valid_directions)
 
     def add_neighbor(self, direction: Direction, neighbor: RoadNode):
         """Add a neighbor in the given direction."""
+        assert direction in self.neighbors, (
+            f"Invalid direction {direction}. Must be one of {list(self.neighbors.keys())}."
+        )
         self.neighbors[direction] = neighbor
         neighbor.neighbors[-direction] = self
 
@@ -47,6 +78,7 @@ class RoadNode:
 
     def draw_node(self, surface: pg.Surface):
         """Draw the node as a small circle on the given surface for debug purposes."""
+        surface.blit(self.image, self.position)
         pg.draw.circle(surface, constants.NODE_COLOR, self.position, constants.TILE_SIZE // 3)
 
     def draw_edges(self, surface: pg.Surface):
@@ -75,13 +107,23 @@ class NodeGraph:
                 node.draw_node(surface)
 
     def setup_test_nodes(self):
-        node_a = RoadNode(Vector2(2, 2) * constants.TILE_SIZE)
-        node_b = RoadNode(Vector2(4, 2) * constants.TILE_SIZE)
-        node_c = RoadNode(Vector2(2, 4) * constants.TILE_SIZE)
-        node_d = RoadNode(Vector2(4, 4) * constants.TILE_SIZE)
-        node_e = RoadNode(Vector2(5, 4) * constants.TILE_SIZE)
-        node_f = RoadNode(Vector2(2, 8) * constants.TILE_SIZE)
-        node_g = RoadNode(Vector2(5, 8) * constants.TILE_SIZE)
+        node_i = RoadNode(Vector2(11, 3) * constants.TILE_SIZE, {Direction.LEFT, Direction.UP})  # Bottom Right
+        node_j = RoadNode(Vector2(10, 3) * constants.TILE_SIZE, {Direction.LEFT, Direction.RIGHT})  # Bottom
+        node_k = RoadNode(Vector2(9, 3) * constants.TILE_SIZE, {Direction.UP, Direction.RIGHT})  # Bottom Left
+        node_l = RoadNode(Vector2(9, 2) * constants.TILE_SIZE, {Direction.UP, Direction.DOWN})  # Left
+        node_m = RoadNode(Vector2(9, 1) * constants.TILE_SIZE, {Direction.RIGHT, Direction.DOWN})  # Top Left
+        node_n = RoadNode(Vector2(10, 1) * constants.TILE_SIZE, {Direction.RIGHT, Direction.LEFT})  # Top
+        node_o = RoadNode(Vector2(11, 1) * constants.TILE_SIZE, {Direction.DOWN, Direction.LEFT})  # Top Right
+        node_p = RoadNode(Vector2(11, 2) * constants.TILE_SIZE, {Direction.UP, Direction.DOWN})  # Right
+
+        node_a = RoadNode(Vector2(2, 2) * constants.TILE_SIZE, {Direction.RIGHT, Direction.DOWN})
+        node_b = RoadNode(Vector2(3, 2) * constants.TILE_SIZE, {Direction.LEFT, Direction.DOWN})
+        node_c = RoadNode(Vector2(2, 3) * constants.TILE_SIZE, {Direction.UP, Direction.RIGHT, Direction.DOWN})
+        node_d = RoadNode(Vector2(3, 3) * constants.TILE_SIZE, {Direction.UP, Direction.LEFT, Direction.RIGHT})
+        node_e = RoadNode(Vector2(5, 3) * constants.TILE_SIZE, {Direction.LEFT, Direction.DOWN})
+        node_f = RoadNode(Vector2(2, 8) * constants.TILE_SIZE, {Direction.UP, Direction.RIGHT})
+        node_g = RoadNode(Vector2(5, 8) * constants.TILE_SIZE, {Direction.UP, Direction.LEFT})
+
         node_a.add_neighbor(Direction.RIGHT, node_b)
         node_a.add_neighbor(Direction.DOWN, node_c)
         node_b.add_neighbor(Direction.LEFT, node_a)
@@ -98,35 +140,20 @@ class NodeGraph:
         node_f.add_neighbor(Direction.RIGHT, node_g)
         node_g.add_neighbor(Direction.UP, node_e)
         node_g.add_neighbor(Direction.LEFT, node_f)
-        self.nodes = [node_a, node_b, node_c, node_d, node_e, node_f, node_g]
-
-    def __repr__(self) -> str:
-        # Create a grid representation of the node graph for debugging purposes.
-        biggest_x = int(max(node.position.x for node in self.nodes))
-        biggest_y = int(max(node.position.y for node in self.nodes))
-        grid = [
-            ["█" for _ in range(biggest_x // constants.TILE_SIZE + 1)]
-            for _ in range(biggest_y // constants.TILE_SIZE + 1)
+        self.nodes = [
+            node_a,
+            node_b,
+            node_c,
+            node_d,
+            node_e,
+            node_f,
+            node_g,
+            node_i,
+            node_j,
+            node_k,
+            node_l,
+            node_m,
+            node_n,
+            node_o,
+            node_p,
         ]
-
-        # Mark nodes with "+"
-        for node in self.nodes:
-            pos = node.position / constants.TILE_SIZE
-            grid[int(pos.y)][int(pos.x)] = "+"
-        # Mark edges with "-" or "|" depending on their direction.
-        for node in self.nodes:
-            for direction, neighbor in node.neighbors.items():
-                if neighbor:
-                    replacing = node.position / constants.TILE_SIZE
-                    while True:
-                        replacing += direction.vector
-                        if grid[int(replacing.y)][int(replacing.x)] == "+":
-                            break
-                        else:
-                            char = "|" if direction in (Direction.UP, Direction.DOWN) else "-"
-                            grid[int(replacing.y)][int(replacing.x)] = char
-
-        out = "NodeGraph:\n"
-        for row in grid:
-            out += "".join(row) + "\n"
-        return out

@@ -23,12 +23,12 @@ class TileType:
         surface.blit(image, position)
 
 
-class BankTileType(TileType):
+class TileTypeBank(TileType):
     def __init__(self):
         super().__init__(Image.BANK)
 
 
-class RadioTileType(TileType):
+class TileTypeRadio(TileType):
     def __init__(self):
         super().__init__(Image.RADIO)
 
@@ -64,10 +64,10 @@ class TileGrid:
 
     def draw(self, surface):
         """Draw all tiles in the grid on the given surface."""
-        for i in range(0, surface.get_width(), constants.TILE_SIZE):
-            pg.draw.line(surface, pg.Color("darkgray"), (i, 0), (i, surface.get_height()))
-        for j in range(0, surface.get_height(), constants.TILE_SIZE):
-            pg.draw.line(surface, pg.Color("darkgray"), (0, j), (surface.get_width(), j))
+        for i in range(0, self.width * constants.TILE_SIZE, constants.TILE_SIZE):
+            pg.draw.line(surface, pg.Color("darkgray"), (i, 0), (i, self.height * constants.TILE_SIZE))
+        for j in range(0, self.height * constants.TILE_SIZE, constants.TILE_SIZE):
+            pg.draw.line(surface, pg.Color("darkgray"), (0, j), (self.width * constants.TILE_SIZE, j))
 
         for column in self.tiles:
             for tile in column:

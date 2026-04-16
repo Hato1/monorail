@@ -30,6 +30,11 @@ UI_PATH = ASSETS_PATH / "ui"
 
 @unique
 class Image(Enum):
+    RAIL_STRAIGHT = "tiles/rail/straight.png"
+    RAIL_CURVE = "tiles/rail/curve.png"
+    RAIL_3WAY = "tiles/rail/3way.png"
+    RAIL_INTERSECTION = "tiles/rail/intersection.png"
+
     BANK = "tiles/bank.png"
     RADIO = "tiles/radio.png"
 
