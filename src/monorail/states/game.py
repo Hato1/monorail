@@ -30,6 +30,8 @@ class Game(State):
 
         self.tile_grid.set_tile((0, 0), tile.TileTypeBank())
         self.tile_grid.set_tile((10, 5), tile.TileTypeRadio())
+        middle = (constants.GRID_WIDTH // 2, constants.GRID_HEIGHT // 2)
+        self.tile_grid.set_tile(middle, tile.TileTypeRailNS())
 
     def get_event(self, event: pg.Event):
         if event.type == pg.KEYDOWN:
