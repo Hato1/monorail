@@ -4,8 +4,12 @@ DEBUG = True
 
 SCREEN_SIZE = (672, 384)  # 16:9 aspect ratio, fits 21x12 tiles at 32x32 pixels each.
 TILE_SIZE = 32  # Size of each tile in pixels.
-NROWS = SCREEN_SIZE[1] // TILE_SIZE  # Number of rows of tiles on the screen.
-NCOLS = SCREEN_SIZE[0] // TILE_SIZE  # Number of columns of tiles on the screen.
+GRID_HEIGHT = SCREEN_SIZE[1] // TILE_SIZE  # Number of rows of tiles on the screen.
+GRID_WIDTH = SCREEN_SIZE[0] // TILE_SIZE  # Number of columns of tiles on the screen.
+
+SIDEBAR_WIDTH = TILE_SIZE * 5  # Width of the sidebar on the right side of the screen.
+
+GRID_WIDTH -= SIDEBAR_WIDTH // TILE_SIZE  # Leave space on the right side of the screen for UI elements.
 
 DEFAULT_CAPTION = "Monorail"  # Window title.
 

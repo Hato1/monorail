@@ -13,6 +13,7 @@ class Vector2(NamedTuple):
     - __sub__: Subtracts two Vector2 objects or a Vector2 object and a tuple.
     - __mul__: Multiplies the Vector2 object by a scalar.
     - __truediv__: Divides the Vector2 object by a scalar.
+    - __floordiv__: Performs floor division of the Vector2 object by a scalar.
     - __neg__: Negates the Vector2 object.
     - __eq__: Checks if two Vector2 objects are approximately equal, accounting for floating-point precision issues.
     - length_squared: Returns the square of the length of the vector.
@@ -61,6 +62,11 @@ class Vector2(NamedTuple):
         if scalar == 0:
             raise ValueError("Cannot divide by zero.")
         return self.__class__(self.x / scalar, self.y / scalar)
+
+    def __floordiv__(self, scalar: float) -> Self:
+        if scalar == 0:
+            raise ValueError("Cannot divide by zero.")
+        return self.__class__(self.x // scalar, self.y // scalar)
 
     def __neg__(self) -> Self:
         return self.__class__(-self.x, -self.y)

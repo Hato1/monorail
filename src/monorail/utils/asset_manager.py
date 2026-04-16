@@ -29,9 +29,24 @@ UI_PATH = ASSETS_PATH / "ui"
 
 
 @unique
-class Images(Enum):
-    MONSTER_FRAME_0 = "monster/frame_0.png"
-    MONSTER_FRAME_1 = "monster/frame_1.png"
+class Image(Enum):
+    RAIL_NS = "tiles/rail/ns.png"
+    RAIL_EW = "tiles/rail/ew.png"
+
+    RAIL_NE = "tiles/rail/ne.png"
+    RAIL_SE = "tiles/rail/se.png"
+    RAIL_SW = "tiles/rail/sw.png"
+    RAIL_NW = "tiles/rail/nw.png"
+
+    RAIL_NES = "tiles/rail/nes.png"
+    RAIL_NSW = "tiles/rail/nsw.png"
+    RAIL_NEW = "tiles/rail/new.png"
+    RAIL_ESW = "tiles/rail/esw.png"
+
+    RAIL_NESW = "tiles/rail/nesw.png"
+
+    BANK = "tiles/bank.png"
+    RADIO = "tiles/radio.png"
 
     @cache
     def load(self) -> pg.Surface:
@@ -41,7 +56,7 @@ class Images(Enum):
 
 
 @unique
-class Sounds(Enum):
+class Sound(Enum):
     # Web builds with PygBag only support OGG sounds.
     EXPLOSION = "explosion.wav"
     SHOOT = "shoot.wav"
@@ -56,20 +71,20 @@ class Sounds(Enum):
 
 
 @unique
-class Fonts(Enum):
-    ARIAL = "arial.ttf"
-    COMIC_SANS = "comic_sans.ttf"
+class Font(Enum):
+    m_tiny = "m3x6.ttf"
+    m_small = "m5x7.ttf"
+    m_large = "m6x11.ttf"
 
     @cache
-    def load(self) -> pg.Font:
+    def load(self, size: int = 16) -> pg.Font:
         with as_file(FONTS_PATH / self.value) as path:
             assert path.is_file(), f"Font file not found: {path}"
-            # Default point size is 20; can be changed later.
-            return pg.font.Font(path)
+            return pg.font.Font(path, size)
 
 
 @unique
-class Levels(Enum):
+class Level(Enum):
     LEVEL_1 = "level_1.json"
     LEVEL_2 = "level_2.json"
 
@@ -81,7 +96,7 @@ class Levels(Enum):
 
 
 @unique
-class UIElements(Enum):
+class UIElement(Enum):
     HEART_FULL = "healthbar/heart_full.png"
     HEART_EMPTY = "healthbar/heart_empty.png"
     NUMBER_0 = "numbers/0.png"
