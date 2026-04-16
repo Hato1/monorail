@@ -15,6 +15,7 @@ class Shelf:
         self.price = price
         self.message = message
         self.items: tuple[tile.TileTypeRoad, ...] = items
+        self.item_rects: list[pg.Rect] = []  # List of rects for each item, used for click detection
 
     def draw_title(self, surface: pg.Surface, position: Vector2) -> int:
         message = f"${self.price} - {self.message}"
@@ -24,10 +25,13 @@ class Shelf:
         return text_surface.get_height() + self.padding_between_title_and_items
 
     def draw_items(self, surface: pg.Surface, position: Vector2):
+        self.item_rects.clear()  # Clear the list before drawing new items
         for item in self.items:
             # Draw a light gray background for the item to make it stand out against the sidebar background
-            pg.draw.rect(surface, pg.Color("lightgray"), (*position, constants.TILE_SIZE, constants.TILE_SIZE))
+            item_rect = pg.Rect((*position, constants.TILE_SIZE, constants.TILE_SIZE))
+            pg.draw.rect(surface, pg.Color("lightgray"), item_rect)
             item.draw(surface, position)
+            self.item_rects.append(item_rect)  # Store the rect for click detection
             position += (constants.TILE_SIZE + self.gap_between_items, 0)  # Move right for the next item
 
     def draw(self, surface: pg.Surface, position: Vector2) -> int:

@@ -111,15 +111,22 @@ class TileGrid:
     """Class representing the grid of tiles in the game world."""
 
     def __init__(self, width: int, height: int):
+        """Init a grid of the given width and height, filled with None (no tile).
+
+        Args:
+            width (int): Number of tiles in the horizontal direction.
+            height (int): Number of tiles in the vertical direction.
+        """
         self.width = width
         self.height = height
         self.tiles: list[list[Tile | None]] = [[None for _ in range(height)] for _ in range(width)]
 
-    def set_tile(self, x: int, y: int, tile_type: TileType):
+    def set_tile(self, position: tuple[int, int], tile_type: TileType):
         """Set a tile at the given grid coordinates."""
+        x, y = position
         if 0 <= x < self.width and 0 <= y < self.height:
-            position = Vector2(x * constants.TILE_SIZE, y * constants.TILE_SIZE)
-            self.tiles[x][y] = Tile(position, tile_type)
+            position_px = Vector2(x * constants.TILE_SIZE, y * constants.TILE_SIZE)
+            self.tiles[x][y] = Tile(position_px, tile_type)
         else:
             raise IndexError(f"Tile coordinates out of bounds: ({x}, {y})")
 

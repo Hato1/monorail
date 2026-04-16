@@ -28,8 +28,8 @@ class Game(State):
         self.monorail = Monorail(node=self.node_graph.nodes[0])
         self.tile_grid = TileGrid(constants.GRID_WIDTH, constants.GRID_HEIGHT)
 
-        self.tile_grid.set_tile(0, 0, tile.TileTypeBank())
-        self.tile_grid.set_tile(10, 5, tile.TileTypeRadio())
+        self.tile_grid.set_tile((0, 0), tile.TileTypeBank())
+        self.tile_grid.set_tile((10, 5), tile.TileTypeRadio())
 
     def get_event(self, event: pg.Event):
         if event.type == pg.KEYDOWN:
@@ -42,7 +42,7 @@ class Game(State):
             if event.key == pg.K_p:
                 print(repr(self.node_graph))
         if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
-            self.cursor.handle_mouse_click(Vector2(*event.pos), self.tile_grid)
+            self.cursor.handle_mouse_click(Vector2(*event.pos), self.tile_grid, self.sidebar.shop)
 
     def update(self, surface_rect, keys, current_time, dt):
         self.monorail.update(dt, keys)

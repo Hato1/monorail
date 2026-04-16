@@ -97,6 +97,10 @@ class Vector2(NamedTuple):
             return type(self)(0, 0)
         return self / length
 
+    def as_int(self) -> tuple:
+        """Return the vector as a tuple of integers, rounding the components to the nearest integer."""
+        return int(self.x), int(self.y)
+
     def __hash__(self) -> int:
         return hash((self.x, self.y))
 
