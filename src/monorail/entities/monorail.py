@@ -4,7 +4,7 @@ import pygame as pg
 from pygame import Color
 
 from monorail import constants
-from monorail.entities.tile import TileTypeRail
+from monorail.entities.tile import TileRail
 from monorail.utils.vector import Direction, Vector2
 
 
@@ -50,17 +50,17 @@ class Monorail:
 
     def __init__(
         self,
-        node: TileTypeRail,
+        tile: TileRail,
         speed_multiplier: float = 1.0,
         name: str = "Manwell",
     ):
         self.name = name
-        self.node: TileTypeRail = node
-        self.target: TileTypeRail = node
+        self.tile: TileRail = tile
+        self.target: TileRail = tile
         self.position: Vector2
         self.set_position()
         self.direction = Direction.STOP
-        self.base_speed = 100 * constants.TILE_SIZE / 16
+        self.base_speed = 100 * constants.TILE_SIZE // 16
         self.speed_multiplier = speed_multiplier
         self.color = Color("blue")
 
@@ -71,33 +71,33 @@ class Monorail:
 
     def set_position(self) -> None:
         """Set the monorail's position to the center of the current node."""
-        self.position = self.node.position_px
+        self.position = self.tile.position_px
 
     def overshot_target(self) -> bool:
         """Check if the monorail has overshot its target node."""
-        to_target = self.target.position_px - self.node.position_px
-        to_position = self.position - self.node.position_px
+        to_target = self.target.position_px - self.tile.position_px
+        to_position = self.position - self.tile.position_px
         return to_position.length_squared() >= to_target.length_squared()
 
-    def get_new_target(self, direction: Direction) -> TileTypeRail:
+    def get_new_target(self, direction: Direction) -> TileRail:
         """Calculate the new target node based on the current direction if available."""
         if direction == Direction.STOP:
-            return self.node
-        return self.node.get_connected_rail(direction) or self.node
+            return self.tile
+        return self.tile.get_connected_rail(direction) or self.tile
 
     def update(self, dt: float, keys) -> None:
         """Update the monorail's position based on its speed and the time since the last frame."""
-        self.position += self.direction.vector * self.speed * dt
+        self.position += self.direction.vector * int(self.speed * dt)
         direction = get_directional_input(keys) or self.direction
 
         if self.overshot_target():
-            self.node = self.target
+            self.tile = self.target
             self.target = self.get_new_target(direction)
-            if self.target != self.node:
+            if self.target != self.tile:
                 self.direction = direction
             else:
                 self.target = self.get_new_target(self.direction)
-                if self.target == self.node:
+                if self.target == self.tile:
                     self.direction = Direction.STOP
             self.set_position()
 

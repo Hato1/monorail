@@ -24,10 +24,10 @@ class Game(State):
         self.sidebar = Sidebar(position=Vector2(constants.GRID_WIDTH * constants.TILE_SIZE, 0))
         self.tile_grid = TileGrid(constants.GRID_WIDTH, constants.GRID_HEIGHT)
 
-        self.monorail = Monorail(node=self.tile_grid.start_tile)
+        self.monorail = Monorail(tile=self.tile_grid.start_tile)
 
-        self.tile_grid.set_tile((0, 0), tile.TileTypeBank)
-        self.tile_grid.set_tile((10, 5), tile.TileTypeRadio)
+        self.tile_grid.set_tile(Vector2(0, 0), tile.TileBank)
+        self.tile_grid.set_tile(Vector2(10, 5), tile.TileRadio)
 
     def get_event(self, event: pg.Event):
         if event.type == pg.KEYDOWN:
