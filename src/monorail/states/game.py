@@ -4,6 +4,7 @@ import pygame as pg
 
 from monorail import constants
 from monorail.entities import tile
+from monorail.entities.bottombar import BottomBar
 from monorail.entities.cursor import Cursor
 from monorail.entities.monorail import Monorail
 from monorail.entities.sidebar import Sidebar
@@ -22,6 +23,8 @@ class Game(State):
     def startup(self, current_time: float, persistant: dict[str, Any], previous: type[State], surface_rect: pg.Rect):
         super().startup(current_time, persistant, previous, surface_rect)
         self.sidebar = Sidebar(position=Vector2(constants.GRID_WIDTH * constants.TILE_SIZE, 0))
+        self.bottom_bar = BottomBar(position=Vector2(0, constants.GRID_HEIGHT * constants.TILE_SIZE))
+
         self.tile_grid = TileGrid(constants.GRID_WIDTH, constants.GRID_HEIGHT)
 
         self.monorail = Monorail(tile=self.tile_grid.start_tile)
@@ -50,3 +53,4 @@ class Game(State):
         self.monorail.draw(surface)
         self.cursor.draw(surface)
         self.sidebar.draw(surface)
+        self.bottom_bar.draw(surface)
